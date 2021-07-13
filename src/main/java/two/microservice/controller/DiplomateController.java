@@ -1,6 +1,5 @@
 package two.microservice.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -15,8 +14,12 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/v1")
 public class DiplomateController {
-    @Autowired
-    private DiplomateRepository diplomateRepository;
+
+    private final DiplomateRepository diplomateRepository;
+
+    public DiplomateController(DiplomateRepository diplomateRepository) {
+        this.diplomateRepository = diplomateRepository;
+    }
 
     @GetMapping("/diplomates")
     public List<Diplomate> getAllDiplomates(){
@@ -36,9 +39,9 @@ public class DiplomateController {
         return diplomateRepository.save(diplomate);
     }
 
-    @PutMapping("/diplomates/{id}")
-    public ResponseEntity<Diplomate> updateDiplomate(@PathVariable(value = "id") Long diplomateId,
-                                                   @Validated @RequestBody Diplomate diplomateDetails) throws ResourceNotFoundException {
+    @PutMapping("/diplomates/{diplomateId}")
+    public ResponseEntity<Diplomate> updateDiplomate(@PathVariable(value = "diplomateId") Long diplomateId,
+                                                     @Validated @RequestBody Diplomate diplomateDetails) throws ResourceNotFoundException {
         Diplomate diplomate = diplomateRepository.findById(diplomateId)
                 .orElseThrow(() -> new ResourceNotFoundException("Diplomate not found for this id :: " + diplomateId));
 

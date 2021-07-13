@@ -6,9 +6,17 @@ import javax.persistence.*;
 @Table(name = "diplomates")
 public class Diplomate {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
+
+    @Column(unique = true, name = "title", nullable = false)
     String title;
+
+    @Column(name = "image", nullable = true)
     String image;
+
+    @Column(name = "description", nullable = true)
     String description;
 
     public Diplomate() {
@@ -20,8 +28,6 @@ public class Diplomate {
         this.description = description;
     }
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public long getId() {
         return id;
     }
@@ -30,7 +36,6 @@ public class Diplomate {
         this.id = id;
     }
 
-    @Column(name = "title", nullable = false)
     public String getTitle() {
         return title;
     }
@@ -39,7 +44,6 @@ public class Diplomate {
         this.title = title;
     }
 
-    @Column(name = "image", nullable = true)
     public String getImage() {
         return image;
     }
@@ -48,7 +52,6 @@ public class Diplomate {
         this.image = image;
     }
 
-    @Column(name = "description", nullable = true)
     public String getDescription() {
         return description;
     }
@@ -59,6 +62,11 @@ public class Diplomate {
 
     @Override
     public String toString() {
-        return "Diplomate ["+"id= "+id+", title= "+title+", image="+image+", description="+description+"]";
+        return "Diplomate{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", image='" + image + '\'' +
+                ", description='" + description + '\'' +
+                '}';
     }
 }
