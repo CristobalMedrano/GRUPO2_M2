@@ -23,18 +23,18 @@ pipeline {
             steps{
                 dir("${env.WORKSPACE}/${env.TEST_FOLDER}") {
                     echo 'Limpiando carpeta de resultados.'
-					sh 'touch test-results.xml'
-					sh 'rm -f *.xml'
+					//sh 'touch test-results.xml'
+					//sh 'rm -f *.xml'
 				}
                 catchError(buildResult: "SUCCESS", stageResult: "FAILURE") {
                 	dir("${env.WORKSPACE}") {
                         sh "chmod +x ./gradlew"
-						sh "./gradlew test"
+						//sh "./gradlew test"
 					}
             	}
                 dir("${env.WORKSPACE}/${env.TEST_FOLDER}") {
                     echo "Formateando el resultado de los tests realizados."
-					junit "*.xml"
+					//junit "*.xml"
 				}
             }
         }
@@ -43,7 +43,7 @@ pipeline {
 				dir("${env.WORKSPACE}") {
 					withSonarQubeEnv("${env.SONARQUBE_SERVER}") {
 						sh "chmod +x ./gradlew"
-						sh "./gradlew sonarqube"
+						//sh "./gradlew sonarqube"
     					}
 				}
   		    }
