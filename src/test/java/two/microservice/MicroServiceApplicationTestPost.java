@@ -1,5 +1,6 @@
 package two.microservice;
 
+
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import two.microservice.model.Diplomate;
 import two.microservice.model.Postulation;
+import two.microservice.service.DiplomateServices;
+
+
+
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -23,6 +28,7 @@ public class MicroServiceApplicationTestPost {
 
     @Autowired
     private TestRestTemplate restTemplate;
+    DiplomateServices diplomateServices;
     @LocalServerPort
     private int port;
 
@@ -65,6 +71,19 @@ public class MicroServiceApplicationTestPost {
 
         assertEquals(gotDiplomate.toString(), AnotherDiplomate.toString());
 
+
+    }
+
+    @Test
+    public void testForGettingIDForDiplomates(){
+        Diplomate diplomate = new Diplomate("Diplomado posteado por un test -> prueba",
+                "https://www.inlingua.com/wp-content/uploads/2018/05/language-courses-companies-test.svg",
+                "Nueva descripción hecha *nuevamente*");
+
+
+        long index = diplomateServices.saveDiplomate(diplomate);
+
+        System.out.println("posible id :" + index + "//" + diplomate.getId());
 
     }
 }
