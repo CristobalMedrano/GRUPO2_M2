@@ -17,7 +17,7 @@ import java.util.Objects;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class DiplomateControllerTest {
+class DiplomateControllerTest {
 
     @Autowired
     private TestRestTemplate restTemplate;
@@ -32,12 +32,7 @@ public class DiplomateControllerTest {
     }
 
     @Test
-    public void contextLoads() {
-
-    }
-
-    @Test
-    public void testGetAllDiplomates() {
+    void testGetAllDiplomates() {
         HttpHeaders headers = new HttpHeaders();
         HttpEntity<String> entity = new HttpEntity<>(null, headers);
         ResponseEntity<String> response = restTemplate.exchange(getRootUrl() + getSection(),
@@ -47,7 +42,7 @@ public class DiplomateControllerTest {
 
 //    Diplomate data = new Gson().fromJson(response.getBody(), Diplomate.class);
     @Test
-    public void testGetDiplomateById() {
+    void testGetDiplomateById() {
         HttpHeaders headers = new HttpHeaders();
         HttpEntity<String> entity = new HttpEntity<>(null, headers);
         ResponseEntity<String> response = restTemplate.exchange(getRootUrl() + getSection(),
@@ -59,7 +54,7 @@ public class DiplomateControllerTest {
     }
 
     @Test
-    public void testCreateDiplomate() {
+    void testCreateDiplomate() {
         Diplomate newDiplomate = new Diplomate("Diplomado posteado por un test para crear",
                 "https://www.inlingua.com/wp-content/uploads/2018/05/language-courses-companies-test.svg",
                 "Nueva descripción hecha *nuevamente*");
@@ -72,7 +67,7 @@ public class DiplomateControllerTest {
     }
 
     @Test
-    public void testUpdateDiplomate() {
+    void testUpdateDiplomate() {
         Diplomate newDiplomate = new Diplomate("Diplomado posteado por un test para editar",
                 "https://www.inlingua.com/wp-content/uploads/2018/05/language-courses-companies-test.svg",
                 "Nueva descripción hecha *nuevamente*");
@@ -93,7 +88,7 @@ public class DiplomateControllerTest {
     }
 
     @Test
-    public void testDeleteDiplomate() {
+    void testDeleteDiplomate() {
         Diplomate newDiplomate = new Diplomate("Diplomado posteado por un test para borrado",
                 "https://www.inlingua.com/wp-content/uploads/2018/05/language-courses-companies-test.svg",
                 "Nueva descripción hecha *nuevamente*");

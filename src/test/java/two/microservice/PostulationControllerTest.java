@@ -18,7 +18,7 @@ import java.util.Objects;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class PostulationControllerTest {
+class PostulationControllerTest {
 
 
     @Autowired
@@ -37,7 +37,7 @@ public class PostulationControllerTest {
 
     // Obteniendo todas las postulaciones hechas para el primer diplomado
     @Test
-    public void testGetAllPostulations_BIS() {
+    void testGetAllPostulations_BIS() {
         HttpHeaders headers = new HttpHeaders();
         HttpEntity<String> entity = new HttpEntity<>(null, headers);
         ResponseEntity<String> response = restTemplate.exchange(getRootUrl() + getMainSection(),
@@ -54,7 +54,7 @@ public class PostulationControllerTest {
 
     // Se obtiene la primera postulación y se muestra su id y su forma de ingreso.
     @Test
-    public void testGetPostulationById_IDS() {
+    void testGetPostulationById_IDS() {
 
         // Se obtiene la id de algun diplomado.
         HttpHeaders headers = new HttpHeaders();
@@ -82,7 +82,7 @@ public class PostulationControllerTest {
 
 
     @Test
-    public void testPostingPostulationIDS() {
+    void testPostingPostulationIDS() {
         HttpHeaders headers = new HttpHeaders();
         HttpEntity<String> entity = new HttpEntity<>(null, headers);
         ResponseEntity<String> response = restTemplate.exchange(getRootUrl() + getMainSection(),
@@ -115,7 +115,7 @@ public class PostulationControllerTest {
     }
 
     @Test
-    public void testUpdatingPostulationIDS() {
+    void testUpdatingPostulationIDS() {
 
         HttpHeaders headers = new HttpHeaders();
         HttpEntity<String> entity = new HttpEntity<>(null, headers);
@@ -167,7 +167,7 @@ public class PostulationControllerTest {
     }
 
     @Test
-    public void testDeletePostulationFromDS() {
+    void testDeletePostulationFromDS() {
         HttpHeaders headers = new HttpHeaders();
         HttpEntity<String> entity = new HttpEntity<>(null, headers);
         ResponseEntity<String> response = restTemplate.exchange(getRootUrl() + getMainSection(),

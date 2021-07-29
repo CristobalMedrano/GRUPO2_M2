@@ -15,7 +15,8 @@ import java.util.Map;
 @RestController
 @CrossOrigin("*")
 @RequestMapping("/api/v1/diplomates/{diplomateId}")
-public class PostulationController {
+class PostulationController {
+    private static final String NOTFOUNDTEXT = " not found";
     private final PostulationRepository postulationRepository;
     private final DiplomateRepository diplomateRepository;
 
@@ -43,7 +44,7 @@ public class PostulationController {
         return diplomateRepository.findById(diplomateId).map(diplomate -> {
             postulation.setDiplomate(diplomate);
             return postulationRepository.save(postulation);
-        }).orElseThrow(() -> new ResourceNotFoundException("diplomateId " + diplomateId + " not found"));
+        }).orElseThrow(() -> new ResourceNotFoundException("diplomateId " + diplomateId + NOTFOUNDTEXT));
     }
 
     @PutMapping("/postulations/{postulationId}")
@@ -51,10 +52,10 @@ public class PostulationController {
                                                          @PathVariable(value = "diplomateId") Long diplomateId,
                                                          @Validated @RequestBody Postulation postulationDetails) throws ResourceNotFoundException {
         if (!diplomateRepository.existsById(diplomateId)) {
-            throw new ResourceNotFoundException("DiplomateId "+ diplomateId + " not found");
+            throw new ResourceNotFoundException("DiplomateId "+ diplomateId + NOTFOUNDTEXT);
         }
         Postulation postulation = postulationRepository.findById(postulationId)
-                .orElseThrow(() -> new ResourceNotFoundException("PostulationId "+ postulationId + " not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("PostulationId "+ postulationId + NOTFOUNDTEXT));
 
         postulation.setRegistrationForm(postulationDetails.getRegistrationForm());
         postulation.setGraduateCertificate(postulationDetails.getGraduateCertificate());
