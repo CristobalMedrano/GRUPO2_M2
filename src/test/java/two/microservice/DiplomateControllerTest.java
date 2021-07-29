@@ -1,7 +1,7 @@
 package two.microservice;
 
-import static org.junit.Assert.assertNotNull;
-
+import com.google.gson.Gson;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,10 +10,10 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
-import com.google.gson.Gson;
 import org.springframework.web.client.HttpClientErrorException;
 import two.microservice.model.Diplomate;
-import static org.junit.Assert.assertEquals;
+
+import java.util.Objects;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -39,24 +39,23 @@ public class DiplomateControllerTest {
     @Test
     public void testGetAllDiplomates() {
         HttpHeaders headers = new HttpHeaders();
-        HttpEntity<String> entity = new HttpEntity<String>(null, headers);
+        HttpEntity<String> entity = new HttpEntity<>(null, headers);
         ResponseEntity<String> response = restTemplate.exchange(getRootUrl() + getSection(),
                 HttpMethod.GET, entity, String.class);
-        assertNotNull(response.getBody());
+        Assertions.assertNotNull(response.getBody());
     }
 
 //    Diplomate data = new Gson().fromJson(response.getBody(), Diplomate.class);
     @Test
     public void testGetDiplomateById() {
         HttpHeaders headers = new HttpHeaders();
-        HttpEntity<String> entity = new HttpEntity<String>(null, headers);
+        HttpEntity<String> entity = new HttpEntity<>(null, headers);
         ResponseEntity<String> response = restTemplate.exchange(getRootUrl() + getSection(),
                 HttpMethod.GET, entity, String.class);
         Diplomate[] diplomates = new Gson().fromJson(response.getBody(), Diplomate[].class);
 
         Diplomate diplomate = restTemplate.getForObject(getRootUrl() + getSection() +"/" +diplomates[0].getId(), Diplomate.class);
-        System.out.println(diplomate.getTitle());
-        assertNotNull(diplomate);
+        Assertions.assertNotNull(diplomate);
     }
 
     @Test
@@ -67,8 +66,8 @@ public class DiplomateControllerTest {
 
 
         ResponseEntity<Diplomate> postResponse = restTemplate.postForEntity(getRootUrl() + getSection() , newDiplomate, Diplomate.class);
-        assertNotNull(postResponse);
-        assertNotNull(postResponse.getBody());
+        Assertions.assertNotNull(postResponse);
+        Assertions.assertNotNull(postResponse.getBody());
         restTemplate.delete(getRootUrl() +  getSection() + "/" + postResponse.getBody().getId());
     }
 
@@ -81,14 +80,14 @@ public class DiplomateControllerTest {
 
         ResponseEntity<Diplomate> postResponse = restTemplate.postForEntity(getRootUrl() + getSection() , newDiplomate, Diplomate.class);
 
-        Diplomate employee = restTemplate.getForObject(getRootUrl() + getSection() + "/" + postResponse.getBody().getId(), Diplomate.class);
+        Diplomate employee = restTemplate.getForObject(getRootUrl() + getSection() + "/" + Objects.requireNonNull(postResponse.getBody()).getId(), Diplomate.class);
         employee.setTitle(employee.getTitle());
         employee.setDescription("Descripcion editada");
         employee.setImage(employee.getImage());
         restTemplate.put(getRootUrl() + getSection() + "/" + postResponse.getBody().getId(), employee);
 
         Diplomate updatedDiplomate = restTemplate.getForObject(getRootUrl() + getSection() + "/" + postResponse.getBody().getId(), Diplomate.class);
-        assertNotNull(updatedDiplomate);
+        Assertions.assertNotNull(updatedDiplomate);
 
         restTemplate.delete(getRootUrl() +  getSection() + "/" + postResponse.getBody().getId());
     }
@@ -102,13 +101,13 @@ public class DiplomateControllerTest {
 
         ResponseEntity<Diplomate> postResponse = restTemplate.postForEntity(getRootUrl() + getSection() , newDiplomate, Diplomate.class);
 
-        Diplomate diplomate = restTemplate.getForObject(getRootUrl() +  getSection() + "/" + postResponse.getBody().getId(), Diplomate.class);
-        assertNotNull(diplomate);
+        Diplomate diplomate = restTemplate.getForObject(getRootUrl() +  getSection() + "/" + Objects.requireNonNull(postResponse.getBody()).getId(), Diplomate.class);
+        Assertions.assertNotNull(diplomate);
         restTemplate.delete(getRootUrl() +  getSection() + "/" + postResponse.getBody().getId());
         try {
             restTemplate.getForObject(getRootUrl() +  getSection() + "/" + postResponse.getBody().getId(), Diplomate.class);
         } catch (final HttpClientErrorException e) {
-            assertEquals(e.getStatusCode(), HttpStatus.NOT_FOUND);
+            Assertions.assertEquals(e.getStatusCode(), HttpStatus.NOT_FOUND);
         }
     }
 
