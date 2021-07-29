@@ -66,7 +66,7 @@ public class MicroServiceApplicationTestGet {
     },
         * */
         Postulation expectedPostulation = new Postulation("url", "IHO", "IHO", "IHO", "IHO");
-        expectedPostulation.setReceived(true);
+        expectedPostulation.setReceived(false);
         expectedPostulation.setValid(true);
         expectedPostulation.setId(10);
 

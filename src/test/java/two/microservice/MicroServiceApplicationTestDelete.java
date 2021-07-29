@@ -30,7 +30,7 @@ public class MicroServiceApplicationTestDelete {
 
     @Test
     public void testDeleteForDiplomates(){
-        int delID = 44;
+        int delID = 154;
         restTemplate.delete(getRootUrl() + "/diplomates/"+delID);
         try{
             Diplomate choosenDiplomate = restTemplate.getForObject(getRootUrl() + "/diplomates/"+delID, Diplomate.class);
