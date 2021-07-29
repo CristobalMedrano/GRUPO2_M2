@@ -159,7 +159,6 @@ class PostulationControllerTest {
                 getRootUrl() + getMainSection() + "/" + diplomateId  + getSubSecction()  + "/" + postPostulation.getBody().getId(),
                 Postulation.class);
 
-        //System.out.println("ID de la postulacion editada: "+ updatedPostulation.getId());
         Assertions.assertEquals(updatedPostulation.toString(), gotPostulation.toString());
 
         restTemplate.delete(getRootUrl() + getMainSection() + "/" + diplomateId  + getSubSecction()  + "/"+ AnotherPostulation.getId());
