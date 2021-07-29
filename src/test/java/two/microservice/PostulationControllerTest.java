@@ -1,6 +1,7 @@
 package two.microservice;
 
 import com.google.gson.Gson;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +14,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import two.microservice.model.Diplomate;
 import two.microservice.model.Postulation;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import java.util.Objects;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -29,76 +29,120 @@ public class PostulationControllerTest {
     private String getRootUrl(){
         return "http://localhost:" + port + "/api/v1";
     }
-    private String getSection(){
-        return "/diplomates/6/postulations";
+    private String getMainSection(){
+        return "/diplomates";
     }
+    private String getSubSecction() { return "/postulations"; }
 
 
-    // Obteniendo todas las postulaciones hechas para el diplomado.id -> 6
+    // Obteniendo todas las postulaciones hechas para el primer diplomado
     @Test
-    public void testGetAllPostulations_BIS() { // By Id Six
+    public void testGetAllPostulations_BIS() {
         HttpHeaders headers = new HttpHeaders();
-        HttpEntity<String> entity = new HttpEntity<String>(null, headers);
-        ResponseEntity<String> response = restTemplate.exchange(getRootUrl() + getSection(),
+        HttpEntity<String> entity = new HttpEntity<>(null, headers);
+        ResponseEntity<String> response = restTemplate.exchange(getRootUrl() + getMainSection(),
+                HttpMethod.GET, entity, String.class);
+        Diplomate[] diplomates = new Gson().fromJson(response.getBody(), Diplomate[].class);
+        long diplomateId = diplomates[0].getId();
+
+
+        ResponseEntity<String> postulationResponse = restTemplate.exchange(getRootUrl() + getMainSection() + "/" + diplomateId  + getSubSecction(),
                 HttpMethod.GET, entity, String.class);
 
-        assertNotNull(response.getBody());
+        Assertions.assertNotNull(postulationResponse.getBody());
     }
 
     // Se obtiene la primera postulación y se muestra su id y su forma de ingreso.
     @Test
-    public void testGetPostulationById_IDS() { // In Diplomate Six
+    public void testGetPostulationById_IDS() {
+
+        // Se obtiene la id de algun diplomado.
         HttpHeaders headers = new HttpHeaders();
-        HttpEntity<String> entity = new HttpEntity<String>(null, headers);
-        ResponseEntity<String> response = restTemplate.exchange(getRootUrl() + getSection(),
+        HttpEntity<String> entity = new HttpEntity<>(null, headers);
+        ResponseEntity<String> response = restTemplate.exchange(getRootUrl() + getMainSection(),
                 HttpMethod.GET, entity, String.class);
-        Postulation[] postulations = new Gson().fromJson(response.getBody(), Postulation[].class);
+        Diplomate[] diplomates = new Gson().fromJson(response.getBody(), Diplomate[].class);
+        long diplomateId = diplomates[0].getId();
 
+        HttpHeaders postulationHeaders = new HttpHeaders();
+        HttpEntity<String> postulationEntity = new HttpEntity<>(null, postulationHeaders);
+        ResponseEntity<String> postulationResponse = restTemplate.exchange(
+                getRootUrl() + getMainSection() + "/" + diplomateId  + getSubSecction(),
+                HttpMethod.GET,
+                postulationEntity, String.class);
+        Postulation[] postulations = new Gson().fromJson(postulationResponse.getBody(), Postulation[].class);
+        long postulationId = postulations[0].getId();
 
-
-        Postulation postulation = restTemplate.getForObject(getRootUrl() + getSection() +"/" +postulations[0].getId(), Postulation.class);
-        System.out.println("id: " + postulations[0].getId() +"/"+ postulation.getRegistrationForm());
-        assertNotNull(postulation);
+        Postulation postulation = restTemplate.getForObject(
+                getRootUrl() + getMainSection() + "/" + diplomateId  + getSubSecction() + postulationId,
+                Postulation.class);
+        System.out.println("id: " + postulation.getId() +"/"+ postulation.getRegistrationForm());
+        Assertions.assertNotNull(postulation);
     }
 
 
     @Test
     public void testPostingPostulationIDS() {
+        HttpHeaders headers = new HttpHeaders();
+        HttpEntity<String> entity = new HttpEntity<>(null, headers);
+        ResponseEntity<String> response = restTemplate.exchange(getRootUrl() + getMainSection(),
+                HttpMethod.GET, entity, String.class);
+        Diplomate[] diplomates = new Gson().fromJson(response.getBody(), Diplomate[].class);
+        long diplomateId = diplomates[0].getId();
+        //System.out.println("id: diplomado: "+ diplomateId);
         // Creation of a new Postulation
         Postulation AnotherPostulation = new Postulation("url", "IDHO", "IDHO", "IDHO", "IDHO");
         AnotherPostulation.setReceived(false);
         AnotherPostulation.setValid(false);
 
 
-        ResponseEntity<Postulation> postPostulation = restTemplate.postForEntity(getRootUrl() + getSection(), AnotherPostulation, Postulation.class);
+        ResponseEntity<Postulation> postPostulation = restTemplate.postForEntity(
+                getRootUrl() + getMainSection() + "/" + diplomateId  + getSubSecction(),
+                AnotherPostulation,
+                Postulation.class);
 
         // Se rescata la Id seteada por el posteo.
-        AnotherPostulation.setId(postPostulation.getBody().getId());
+        AnotherPostulation.setId(Objects.requireNonNull(postPostulation.getBody()).getId());
+        //System.out.println("id de la postulacion: "+ postPostulation.getBody().getId());
 
         // Test for verify if the post success
-        Postulation gotPostulation = restTemplate.getForObject(getRootUrl() + getSection() +"/"+postPostulation.getBody().getId(), Postulation.class);
+        Postulation gotPostulation = restTemplate.getForObject(getRootUrl() + getMainSection() + "/" + diplomateId  + getSubSecction() +"/"+postPostulation.getBody().getId(), Postulation.class);
 
-        assertEquals(gotPostulation.toString(), AnotherPostulation.toString());
+        Assertions.assertEquals(gotPostulation.toString(), AnotherPostulation.toString());
 
-        restTemplate.delete(getRootUrl() + getSection() + "/"+ gotPostulation.getId());
+        restTemplate.delete(getRootUrl() + getMainSection() + "/" + diplomateId  + getSubSecction() +"/"+postPostulation.getBody().getId());
 
     }
 
     @Test
-    public void testUpdatingPostulationIDS() { // In Diplomate Six
+    public void testUpdatingPostulationIDS() {
+
+        HttpHeaders headers = new HttpHeaders();
+        HttpEntity<String> entity = new HttpEntity<>(null, headers);
+        ResponseEntity<String> response = restTemplate.exchange(getRootUrl() + getMainSection(),
+                HttpMethod.GET, entity, String.class);
+        Diplomate[] diplomates = new Gson().fromJson(response.getBody(), Diplomate[].class);
+        long diplomateId = diplomates[0].getId();
+
         // Creation of a new Postulation
         Postulation AnotherPostulation = new Postulation("url", "IDHO", "IDHO", "IDHO", "IDHO");
         AnotherPostulation.setReceived(false);
         AnotherPostulation.setValid(false);
 
 
-        ResponseEntity<Postulation> postPostulation = restTemplate.postForEntity(getRootUrl() + getSection(), AnotherPostulation, Postulation.class);
+        ResponseEntity<Postulation> postPostulation = restTemplate.postForEntity(
+                getRootUrl() + getMainSection() + "/" + diplomateId  + getSubSecction() ,
+                AnotherPostulation,
+                Postulation.class);
 
         // Se rescata la Id seteada por el posteo.
-        AnotherPostulation.setId(postPostulation.getBody().getId());
+        AnotherPostulation.setId(Objects.requireNonNull(postPostulation.getBody()).getId());
+        //System.out.println("Id de la postulacion para editar: "+ postPostulation.getBody().getId());
 
         // Test for verify if the post success
-        Postulation gotPostulation = restTemplate.getForObject(getRootUrl() + getSection() +"/"+postPostulation.getBody().getId(), Postulation.class);
+        Postulation gotPostulation = restTemplate.getForObject(
+                getRootUrl() + getMainSection() + "/" + diplomateId  + getSubSecction()  +"/"+postPostulation.getBody().getId(),
+                Postulation.class);
 
         // Section of setters
 
@@ -107,34 +151,50 @@ public class PostulationControllerTest {
         gotPostulation.setRegistrationForm("Vía URL");
 
         // post the updated
-        restTemplate.put(getRootUrl() + getSection() + "/" + postPostulation.getBody().getId(), gotPostulation);
+        restTemplate.put(
+                getRootUrl() + getMainSection() + "/" + diplomateId  + getSubSecction()  + "/" + postPostulation.getBody().getId(),
+                gotPostulation);
 
-        Postulation updatedPostulation = restTemplate.getForObject(getRootUrl() + getSection() + "/" + postPostulation.getBody().getId(), Postulation.class);
+        Postulation updatedPostulation = restTemplate.getForObject(
+                getRootUrl() + getMainSection() + "/" + diplomateId  + getSubSecction()  + "/" + postPostulation.getBody().getId(),
+                Postulation.class);
 
-        assertEquals(updatedPostulation.toString(), gotPostulation.toString());
+        //System.out.println("ID de la postulacion editada: "+ updatedPostulation.getId());
+        Assertions.assertEquals(updatedPostulation.toString(), gotPostulation.toString());
 
-        restTemplate.delete(getRootUrl() + getSection() + "/"+ AnotherPostulation.getId());
+        restTemplate.delete(getRootUrl() + getMainSection() + "/" + diplomateId  + getSubSecction()  + "/"+ AnotherPostulation.getId());
 
     }
 
     @Test
-    public void testDeletePostulationFromDS() { // Diplomate Six
+    public void testDeletePostulationFromDS() {
+        HttpHeaders headers = new HttpHeaders();
+        HttpEntity<String> entity = new HttpEntity<>(null, headers);
+        ResponseEntity<String> response = restTemplate.exchange(getRootUrl() + getMainSection(),
+                HttpMethod.GET, entity, String.class);
+        Diplomate[] diplomates = new Gson().fromJson(response.getBody(), Diplomate[].class);
+        long diplomateId = diplomates[0].getId();
+
         // Creation of a new Postulation
         Postulation AnotherPostulation = new Postulation("url", "IDHO", "IDHO", "IDHO", "IDHO");
         AnotherPostulation.setReceived(false);
         AnotherPostulation.setValid(false);
 
         // Post for Another Postulation
-        ResponseEntity<Postulation> postResponse = restTemplate.postForEntity(getRootUrl() + getSection(), AnotherPostulation, Postulation.class);
+        ResponseEntity<Postulation> postResponse = restTemplate.postForEntity(
+                getRootUrl() + getMainSection() + "/" + diplomateId  + getSubSecction() , AnotherPostulation,
+                Postulation.class);
 
 
-        Postulation postulation = restTemplate.getForObject(getRootUrl() +  getSection() + "/" + postResponse.getBody().getId(), Postulation.class);
-        assertNotNull(postulation);
-        restTemplate.delete(getRootUrl() +  getSection() + "/" + postResponse.getBody().getId());
+        Postulation postulation = restTemplate.getForObject(
+                getRootUrl() + getMainSection() + "/" + diplomateId  + getSubSecction()  + "/" + Objects.requireNonNull(postResponse.getBody()).getId(),
+                Postulation.class);
+        Assertions.assertNotNull(postulation);
+        restTemplate.delete(getRootUrl() + getMainSection() + "/" + diplomateId  + getSubSecction()+ "/" + postResponse.getBody().getId());
         try {
-            restTemplate.getForObject(getRootUrl() +  getSection() + "/" + postResponse.getBody().getId(), Postulation.class);
+            restTemplate.getForObject(getRootUrl() + getMainSection() + "/" + diplomateId  + getSubSecction() + "/" + postResponse.getBody().getId(), Postulation.class);
         } catch (final HttpClientErrorException e) {
-            assertEquals(e.getStatusCode(), HttpStatus.NOT_FOUND);
+            Assertions.assertEquals(e.getStatusCode(), HttpStatus.NOT_FOUND);
         }
     }
 
