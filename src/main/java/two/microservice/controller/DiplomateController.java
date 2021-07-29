@@ -14,7 +14,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/v1")
 @CrossOrigin("*")
-public class DiplomateController {
+class DiplomateController {
 
     private final DiplomateRepository diplomateRepository;
 
