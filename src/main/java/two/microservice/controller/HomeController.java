@@ -12,7 +12,7 @@ class HomeController {
     @GetMapping("/")
     public @ResponseBody
     String greeting(){
-        return "Microservicio 2 - Grupo 2 Taller de Ingeniería de Software ";
+        return "Microservicio 2 - Grupo 2 Taller de Ingeniería de Software \n Change fo' testin' ";
     }
 
 }
